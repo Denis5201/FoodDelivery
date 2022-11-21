@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FoodDelivery.Models.DTO;
+using FoodDelivery.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodDelivery.Controllers
@@ -7,27 +10,42 @@ namespace FoodDelivery.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrder()
+        private IOrderService _orderService;
+
+        public OrderController(IOrderService orderService)
         {
+            _orderService = orderService;
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetOrder(Guid id)
+        {
+            await _orderService.GetOrderInfo(id);
             return Ok();
         }
 
         [HttpGet("")]
+        [Authorize]
         public async Task<IActionResult> GetOrderList()
         {
+            await _orderService.GetOrderList();
             return Ok();
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> PostOrder()
+        [Authorize]
+        public async Task<IActionResult> PostOrder(OrderCreateDto order)
         {
+            await _orderService.CreateOrder(order);
             return Ok();
         }
 
         [HttpPost("{id}/status")]
-        public async Task<IActionResult> PostOrderConfirm()
+        [Authorize]
+        public async Task<IActionResult> PostOrderConfirm(Guid id)
         {
+            await _orderService.ConfirmOrder(id);
             return Ok();
         }
     }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FoodDelivery.Models.DTO;
+using FoodDelivery.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodDelivery.Controllers
@@ -7,33 +10,50 @@ namespace FoodDelivery.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        [HttpPost("register")]
-        public async Task<IActionResult> PostRegister()
+        private IUserService _userService;
+        private IUserProfileService _userProfileService;
+
+        public UsersController(IUserService userService, IUserProfileService userProfileService)
         {
+            _userService = userService;
+            _userProfileService = userProfileService;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> PostRegister(UserRegisterModel userRegisterModel)
+        {
+            await _userService.Register(userRegisterModel);
             return Ok();
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> PostLogin()
+        public async Task<IActionResult> PostLogin(LoginCredentials loginCredentials)
         {
-            return Ok();
+            TokenResponse t = await _userService.Login(loginCredentials);
+            return Ok(t);
         }
 
         [HttpPost("logout")]
+        [Authorize]
         public async Task<IActionResult> PostLogout()
         {
+            await _userService.Logout();
             return Ok();
         }
 
         [HttpGet("profile")]
+        [Authorize]
         public async Task<IActionResult> GetProfile()
         {
+            await _userProfileService.GetProfile();
             return Ok();
         }
 
         [HttpPut("profile")]
-        public async Task<IActionResult> PutProfile()
+        [Authorize]
+        public async Task<IActionResult> PutProfile(UserEditModel editModel)
         {
+            await _userProfileService.ChangeProfile(editModel);
             return Ok();
         }
     }
