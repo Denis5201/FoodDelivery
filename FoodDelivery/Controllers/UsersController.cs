@@ -20,17 +20,25 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> PostRegister(UserRegisterModel userRegisterModel)
+        [Produces("application/json")]
+        public async Task<ActionResult<TokenResponse>> PostRegister(UserRegisterModel userRegisterModel)
         {
-            await _userService.Register(userRegisterModel);
-            return Ok();
+            string? error = await _userService.AlreadyRegister(userRegisterModel);
+            if (error != null)
+            {
+                return BadRequest(error);
+            }
+
+            TokenResponse token = await _userService.Register(userRegisterModel);
+            return Ok(token);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> PostLogin(LoginCredentials loginCredentials)
+        [Produces("application/json")]
+        public async Task<ActionResult<TokenResponse>> PostLogin(LoginCredentials loginCredentials)
         {
-            TokenResponse t = await _userService.Login(loginCredentials);
-            return Ok(t);
+            TokenResponse token = await _userService.Login(loginCredentials);
+            return Ok(token);
         }
 
         [HttpPost("logout")]
@@ -42,18 +50,19 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpGet("profile")]
+        [Produces("application/json")]
         [Authorize]
-        public async Task<IActionResult> GetProfile()
+        public async Task<ActionResult<UserDto>> GetProfile()
         {
-            await _userProfileService.GetProfile();
-            return Ok();
+            var profile = await _userProfileService.GetProfile(User.Identity!.Name!);
+            return Ok(profile);
         }
 
         [HttpPut("profile")]
         [Authorize]
         public async Task<IActionResult> PutProfile(UserEditModel editModel)
         {
-            await _userProfileService.ChangeProfile(editModel);
+            await _userProfileService.ChangeProfile(editModel, User.Identity!.Name!);
             return Ok();
         }
     }

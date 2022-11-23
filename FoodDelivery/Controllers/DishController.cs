@@ -1,4 +1,6 @@
-﻿using FoodDelivery.Services;
+﻿using FoodDelivery.Models;
+using FoodDelivery.Models.DTO;
+using FoodDelivery.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,22 +21,24 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> GetDishList()
+        [Produces("application/json")]
+        public async Task<ActionResult> GetDishList(Category? category, bool? vegetarian = false, DishSorting? sorting = null, int? page = 1)
         {
             await _dishService.GetDishList();
             return Ok();
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDishInfo(Guid id)
+        [Produces("application/json")]
+        public async Task<ActionResult<DishDto>> GetDishInfo(Guid id)
         {
-            await _dishService.GetDishInfo(id);
-            return Ok();
+            var diahInfo = await _dishService.GetDishInfo(id);
+            return Ok(diahInfo);
         }
 
         [HttpGet("{id}/rating/check")]
         [Authorize]
-        public async Task<IActionResult> GetIsUserHaveAlreadyDish(Guid id)
+        public async Task<ActionResult> GetIsUserHaveAlreadyDish(Guid id)
         {
             await _dishRatingService.IsAbleSetRating(id);
             return Ok();

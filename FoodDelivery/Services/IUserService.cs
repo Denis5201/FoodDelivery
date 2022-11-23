@@ -7,5 +7,6 @@ namespace FoodDelivery.Services
         Task<TokenResponse> Register(UserRegisterModel userRegisterModel);
         Task<TokenResponse> Login(LoginCredentials loginCredentials);
         Task Logout();
+        Task<string?> AlreadyRegister(UserRegisterModel userRegisterModel);
     }
 }

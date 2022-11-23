@@ -4,7 +4,7 @@ namespace FoodDelivery.Services
 {
     public interface IUserProfileService
     {
-        Task GetProfile();
-        Task ChangeProfile(UserEditModel editModel);
+        Task<UserDto> GetProfile(string id);
+        Task ChangeProfile(UserEditModel editModel, string id);
     }
 }

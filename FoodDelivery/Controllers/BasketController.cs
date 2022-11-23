@@ -34,7 +34,7 @@ namespace FoodDelivery.Controllers
 
         [HttpDelete("dish/{dishId}")]
         [Authorize]
-        public async Task<IActionResult> DeleteDishFromBasket(Guid dishId)
+        public async Task<IActionResult> DeleteDishFromBasket(Guid dishId, bool increase = false)
         {
             await _basketService.RemoveDishFromBasket(dishId);
             return Ok();

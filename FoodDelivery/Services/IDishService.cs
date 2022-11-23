@@ -1,8 +1,10 @@
-﻿namespace FoodDelivery.Services
+﻿using FoodDelivery.Models.DTO;
+
+namespace FoodDelivery.Services
 {
     public interface IDishService
     {
         Task GetDishList();
-        Task GetDishInfo(Guid id);
+        Task<DishDto> GetDishInfo(Guid id);
     }
 }

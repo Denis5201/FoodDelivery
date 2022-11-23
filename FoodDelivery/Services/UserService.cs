@@ -1,8 +1,8 @@
 ﻿using FoodDelivery.Models;
 using FoodDelivery.Models.DTO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.WebSockets;
 using System.Security.Claims;
 
 namespace FoodDelivery.Services
@@ -18,12 +18,56 @@ namespace FoodDelivery.Services
 
         public async Task<TokenResponse> Register(UserRegisterModel userRegisterModel)
         {
-            return new TokenResponse { Token = "123" };
+            Guid newId = Guid.NewGuid();
+            await _context.Users.AddAsync(new User
+            {
+                Id = newId,
+                FullName = userRegisterModel.FullName,
+                Password = userRegisterModel.Password,
+                Email = userRegisterModel.Email,
+                Address = userRegisterModel.Address,
+                birthDate = userRegisterModel.BirthDate,
+                Gender = userRegisterModel.Gender,
+                PhoneNumber = userRegisterModel.PhoneNumber
+            });
+            await _context.SaveChangesAsync();
+
+            string token = CreateToken(newId);
+            return new TokenResponse { Token = token };
         }
 
         public async Task<TokenResponse> Login(LoginCredentials loginCredentials)
         {
-            var claim = new List<Claim> { new Claim(ClaimsIdentity.DefaultNameClaimType, loginCredentials.Email) };
+            var user = await _context.Users
+                .Where(u => u.Email == loginCredentials.Email && u.Password == loginCredentials.Password)
+                .SingleOrDefaultAsync();
+            if (user == null)
+            {
+                return new TokenResponse { Token = null };
+            }
+
+            string token = CreateToken(user.Id);
+            return new TokenResponse { Token = token };
+        }
+
+        public async Task Logout()
+        {
+            
+        }
+
+        public async Task<string?> AlreadyRegister(UserRegisterModel userRegisterModel)
+        {
+            var user = await _context.Users.Where(e => e.Email == userRegisterModel.Email).SingleOrDefaultAsync();
+            if (user != null)
+            {
+                return "Пользователь с данным E-mail уже существует";
+            }
+            return null;
+        }
+
+        private string CreateToken(Guid id)
+        {
+            var claim = new List<Claim> { new Claim(ClaimsIdentity.DefaultNameClaimType, id.ToString()) };
             var now = DateTime.UtcNow;
 
             var jwt = new JwtSecurityToken(
@@ -34,12 +78,8 @@ namespace FoodDelivery.Services
                 expires: now.AddMinutes(JwtConfigs.Lifetime),
                 signingCredentials: new SigningCredentials(JwtConfigs.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
                 );
-            return new TokenResponse { Token = new JwtSecurityTokenHandler().WriteToken(jwt) };
-        }
 
-        public async Task Logout()
-        {
-
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }
 }
