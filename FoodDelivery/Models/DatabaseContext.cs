@@ -10,6 +10,7 @@ namespace FoodDelivery.Models
         public DbSet<Order> Orders { get; set; }
         public DbSet<Basket> Baskets { get; set; }
         public DbSet<Rating> Rating { get; set; }
+        public DbSet<UserRating> UserRatings { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
@@ -22,6 +23,7 @@ namespace FoodDelivery.Models
 
             modelBuilder.Entity<User>().HasMany(b => b.DishInBasket).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(o => o.Orders).WithOne(u => u.User);
+            modelBuilder.Entity<UserRating>().HasKey(k => new { k.UserId, k.RatingId, k.Score });
 
             modelBuilder.Entity<User>().Property(p => p.Gender).HasConversion<string>();
             modelBuilder.Entity<Order>().Property(p => p.Status).HasConversion<string>();

@@ -22,10 +22,15 @@ namespace FoodDelivery.Controllers
 
         [HttpGet("")]
         [Produces("application/json")]
-        public async Task<ActionResult> GetDishList(Category? category, bool? vegetarian = false, DishSorting? sorting = null, int? page = 1)
+        public async Task<ActionResult<DishPagedListDto>> GetDishList(
+            [FromQuery] List<Category> categories = null, 
+            bool vegetarian = false, 
+            DishSorting? sorting = null, 
+            int page = 1)
         {
-            await _dishService.GetDishList();
-            return Ok();
+            categories = categories ?? new List<Category>();
+            var result = await _dishService.GetDishList(categories, vegetarian, sorting, page);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -38,17 +43,22 @@ namespace FoodDelivery.Controllers
 
         [HttpGet("{id}/rating/check")]
         [Authorize]
-        public async Task<ActionResult> GetIsUserHaveAlreadyDish(Guid id)
+        public async Task<ActionResult<bool>> GetIsUserHaveAlreadyDish(Guid id)
         {
-            await _dishRatingService.IsAbleSetRating(id);
-            return Ok();
+            bool result = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
+            return Ok(result);
         }
 
         [HttpPost("{id}/rating")]
         [Authorize]
         public async Task<IActionResult> PostDishRating(Guid id, int ratingScore)
         {
-            await _dishRatingService.SetRating(id, ratingScore);
+            /*bool isAble = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
+            if (!isAble) 
+            {
+                return BadRequest();
+            }*/
+            await _dishRatingService.SetRating(id, ratingScore, User.Identity!.Name!);
             return Ok();
         }
     }

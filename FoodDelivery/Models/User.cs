@@ -31,5 +31,7 @@ namespace FoodDelivery.Models
         public ICollection<Basket>? DishInBasket { get; set; }
 
         public ICollection<Order>? Orders { get; set; }
+
+        public ICollection<UserRating>? UserRatings { get; set; }
     }
 }

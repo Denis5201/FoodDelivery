@@ -2,7 +2,7 @@
 {
     public interface IDishRatingService
     {
-        Task IsAbleSetRating(Guid id);
-        Task SetRating(Guid id, int ratingScore);
+        Task<bool> IsAbleSetRating(Guid id, string userId);
+        Task SetRating(Guid id, int ratingScore, string userId);
     }
 }

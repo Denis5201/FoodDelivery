@@ -8,12 +8,13 @@ namespace FoodDelivery.Models
 
         public double DishRating { get; set; }
 
-        public int AmountVotes { get; set; }
-
         [Required]
         public Guid DishId { get; set; }
 
         [Required]
         public Dish Dish { get; set; }
+
+        [Required]
+        public ICollection<UserRating> UserRatings { get; set; }
     }
 }
