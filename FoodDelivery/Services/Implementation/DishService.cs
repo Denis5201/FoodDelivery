@@ -1,8 +1,10 @@
 ﻿using FoodDelivery.Models;
 using FoodDelivery.Models.DTO;
+using FoodDelivery.Models.Entity;
+using FoodDelivery.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Implementation
 {
     public class DishService : IDishService
     {
@@ -18,7 +20,7 @@ namespace FoodDelivery.Services
             List<DishDto> dishList = new();
             int count = 0;
 
-            if (categories.Any() && vegetarian) 
+            if (categories.Any() && vegetarian)
             {
                 dishList = await _context.Dishes
                     .Where(d => categories.Contains(d.Category) && d.Vegetarian == true)
@@ -41,7 +43,7 @@ namespace FoodDelivery.Services
                     .ToListAsync();
                 count = _context.Dishes.Where(d => categories.Contains(d.Category)).Count();
             }
-            else if (vegetarian) 
+            else if (vegetarian)
             {
                 dishList = await _context.Dishes
                     .Where(d => d.Vegetarian == true)
@@ -99,7 +101,7 @@ namespace FoodDelivery.Services
             return dish;
         }
 
-        private static DishDto GetDishDtoFromDishes(Dish dish) 
+        private static DishDto GetDishDtoFromDishes(Dish dish)
         {
             return new DishDto
             {
@@ -114,9 +116,9 @@ namespace FoodDelivery.Services
             };
         }
 
-        private List<DishDto> SortingDishes(List<DishDto> dishList, DishSorting sorting) 
+        private List<DishDto> SortingDishes(List<DishDto> dishList, DishSorting sorting)
         {
-            switch(sorting) 
+            switch (sorting)
             {
                 case DishSorting.NameAsc:
                     dishList = dishList.OrderBy(d => d.Name, StringComparer.Ordinal).ToList();

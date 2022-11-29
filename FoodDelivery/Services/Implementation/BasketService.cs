@@ -1,7 +1,8 @@
 ﻿using FoodDelivery.Models;
+using FoodDelivery.Services.Interface;
 using System.Runtime.CompilerServices;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Implementation
 {
     public class BasketService : IBasketService
     {

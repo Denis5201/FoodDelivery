@@ -1,6 +1,6 @@
 ﻿using FoodDelivery.Models.DTO;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Interface
 {
     public interface IOrderService
     {

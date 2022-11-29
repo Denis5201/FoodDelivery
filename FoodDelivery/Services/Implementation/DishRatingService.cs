@@ -1,7 +1,10 @@
 ﻿using FoodDelivery.Models;
+using FoodDelivery.Models.DTO;
+using FoodDelivery.Models.Entity;
+using FoodDelivery.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Implementation
 {
     public class DishRatingService : IDishRatingService
     {
@@ -43,14 +46,14 @@ namespace FoodDelivery.Services
 
                 if (userAlreadySetsMark)
                 {
-                    rating.DishRating = (rating.DishRating * count 
+                    rating.DishRating = (rating.DishRating * count
                         - rating.UserRatings.Single(u => u.User.Id == userGuid).Score + ratingScore) / count;
                 }
-                else 
+                else
                 {
                     rating.DishRating = (rating.DishRating * count + ratingScore) / (count + 1);
-                    _context.UserRatings.Add(new UserRating 
-                    { 
+                    _context.UserRatings.Add(new UserRating
+                    {
                         User = user,
                         Rating = rating,
                         Score = ratingScore

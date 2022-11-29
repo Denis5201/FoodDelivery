@@ -1,11 +1,13 @@
 ﻿using FoodDelivery.Models;
 using FoodDelivery.Models.DTO;
+using FoodDelivery.Models.Entity;
+using FoodDelivery.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Implementation
 {
     public class UserService : IUserService
     {
@@ -52,7 +54,7 @@ namespace FoodDelivery.Services
 
         public async Task Logout()
         {
-            
+
         }
 
         public async Task<string?> AlreadyRegister(UserRegisterModel userRegisterModel)

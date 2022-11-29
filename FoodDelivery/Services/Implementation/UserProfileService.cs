@@ -1,8 +1,9 @@
 ﻿using FoodDelivery.Models;
 using FoodDelivery.Models.DTO;
+using FoodDelivery.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Implementation
 {
     public class UserProfileService : IUserProfileService
     {
@@ -18,7 +19,7 @@ namespace FoodDelivery.Services
             var profile = await _context.Users
                 .Where(i => i.Id == Guid.Parse(id))
                 .Select(p => new UserDto
-                { 
+                {
                     Id = p.Id,
                     FullName = p.FullName,
                     BirthDate = p.birthDate,
@@ -34,7 +35,7 @@ namespace FoodDelivery.Services
         {
             var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
 
-            if (user == null) 
+            if (user == null)
             {
                 return;
             }

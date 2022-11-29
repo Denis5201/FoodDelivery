@@ -1,7 +1,8 @@
 ﻿using FoodDelivery.Models;
 using FoodDelivery.Models.DTO;
+using FoodDelivery.Services.Interface;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Implementation
 {
     public class OrderService : IOrderService
     {
@@ -14,22 +15,22 @@ namespace FoodDelivery.Services
 
         public async Task GetOrderInfo(Guid id)
         {
-            
+
         }
 
         public async Task GetOrderList()
         {
-            
+
         }
 
         public async Task CreateOrder(OrderCreateDto order)
         {
-            
+
         }
 
         public async Task ConfirmOrder(Guid id)
         {
-            
+
         }
     }
 }

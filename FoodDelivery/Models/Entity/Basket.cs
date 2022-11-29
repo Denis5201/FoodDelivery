@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace FoodDelivery.Models
+namespace FoodDelivery.Models.Entity
 {
     public class Basket
     {

@@ -1,7 +1,6 @@
-﻿using FoodDelivery.Models;
-using FoodDelivery.Models.DTO;
+﻿using FoodDelivery.Models.DTO;
 
-namespace FoodDelivery.Services
+namespace FoodDelivery.Services.Interface
 {
     public interface IDishService
     {

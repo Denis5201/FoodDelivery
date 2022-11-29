@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FoodDelivery.Models
+namespace FoodDelivery.Models.Entity
 {
     public class UserRating
     {
         [Required]
         public Guid UserId { get; set; }
 
-        [Required] 
-        public int RatingId { get;}
+        [Required]
+        public int RatingId { get; }
 
         [Required]
         public User User { get; set; }
