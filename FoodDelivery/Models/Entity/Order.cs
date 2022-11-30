@@ -26,6 +26,6 @@ namespace FoodDelivery.Models.Entity
         [Required]
         public User User { get; set; }
 
-        public ICollection<Dish> Dishes { get; set; }
+        public ICollection<DishOrder> OrderDishes { get; set; }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using FoodDelivery.Models;
 using FoodDelivery.Models.DTO;
+using FoodDelivery.Models.Entity;
 using FoodDelivery.Services.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Implementation
 {
@@ -13,24 +15,94 @@ namespace FoodDelivery.Services.Implementation
             _context = context;
         }
 
-        public async Task GetOrderInfo(Guid id)
+        public async Task<OrderDto> GetOrderInfo(Guid id)
         {
+            var orderInfo = await _context.Orders
+                .Where(o => o.Id == id)
+                .Include(od => od.OrderDishes)
+                .ThenInclude(d => d.Dish)
+                .SingleAsync();
 
+            var result = new OrderDto
+            {
+                Id = id,
+                DeliveryTime = orderInfo.DeliveryTime,
+                OrderTime = orderInfo.OrderTime,
+                Status = orderInfo.Status,
+                Price = orderInfo.Price,
+                Dishes = orderInfo.OrderDishes.Select(d => new DishBasketDto
+                {
+                    Id = d.DishesId,
+                    Name = d.Dish.Name,
+                    Price = d.Dish.Price,
+                    TotalPrice = d.Dish.Price * d.Amount,
+                    Amount = d.Amount,
+                    Image = d.Dish.Image
+                }).ToList(),
+            };
+
+            return result;
         }
 
-        public async Task GetOrderList()
+        public async Task<List<OrderInfoDto>> GetOrderList(string userId)
         {
+            var orderList = await _context.Orders
+                .Include(u => u.User)
+                .Where(u => u.User.Id == Guid.Parse(userId))
+                .Select(o => new OrderInfoDto
+                {
+                    Id = o.Id,
+                    DeliveryTime = o.DeliveryTime,
+                    OrderTime = o.OrderTime,
+                    Status = o.Status,
+                    Price = o.Price,
+                })
+                .ToListAsync();
 
+            return orderList;
         }
 
-        public async Task CreateOrder(OrderCreateDto order)
+        public async Task CreateOrder(OrderCreateDto order, string userId)
         {
+            var infoFromBasket = await _context.Baskets
+                .Include(u => u.User)
+                .Where(u => u.User.Id == Guid.Parse(userId))
+                .Include(d => d.Dish)
+                .ToListAsync();
 
+            User user = await _context.Users.SingleAsync(u => u.Id == Guid.Parse(userId));
+
+            var orderId = Guid.NewGuid();
+
+            var newOrder = new Order
+            {
+                Id = orderId,
+                DeliveryTime = order.DeliveryTime,
+                OrderTime = DateTime.Now,
+                Status = OrderStatus.InProcess,
+                Price = infoFromBasket.Sum(p => p.Amount * p.Dish.Price),
+                Address = order.Address,
+                User = user
+            };
+            await _context.Orders.AddAsync(newOrder);
+
+            foreach (var dishInBasket in infoFromBasket)
+            {
+                _context.DishOrder.Add(new DishOrder
+                {
+                    OrdersId = orderId,
+                    Dish = dishInBasket.Dish,
+                    Amount = dishInBasket.Amount
+                });
+            }
+            _context.SaveChanges();
         }
 
         public async Task ConfirmOrder(Guid id)
         {
-
+            var order = await _context.Orders.SingleAsync(o => o.Id == id);
+            order.Status = OrderStatus.Delivered;
+            _context.SaveChanges();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace FoodDelivery.Models.Entity
         [MinLength(6)]
         public string Password { get; set; }
 
-        public ICollection<Basket>? DishInBasket { get; set; }
+        public ICollection<DishInBasket>? DishInBasket { get; set; }
 
         public ICollection<Order>? Orders { get; set; }
 

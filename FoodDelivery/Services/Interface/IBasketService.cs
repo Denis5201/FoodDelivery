@@ -1,9 +1,11 @@
-﻿namespace FoodDelivery.Services.Interface
+﻿using FoodDelivery.Models.DTO;
+
+namespace FoodDelivery.Services.Interface
 {
     public interface IBasketService
     {
-        Task GetBasket();
-        Task AddDishInBasket(Guid dishId);
-        Task RemoveDishFromBasket(Guid dishId);
+        Task<List<DishBasketDto>> GetBasket(string userId);
+        Task AddDishInBasket(Guid dishId, string userId);
+        Task RemoveDishFromBasket(Guid dishId, bool increase, string userId);
     }
 }

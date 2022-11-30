@@ -9,9 +9,10 @@ namespace FoodDelivery.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Dish> Dishes { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Basket> Baskets { get; set; }
+        public DbSet<DishInBasket> Baskets { get; set; }
         public DbSet<Rating> Rating { get; set; }
         public DbSet<UserRating> UserRatings { get; set; }
+        public DbSet<DishOrder> DishOrder { get; set; }
         public DbSet<InvalidToken> InvalidTokens { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
@@ -27,6 +28,9 @@ namespace FoodDelivery.Models
             modelBuilder.Entity<User>().HasMany(o => o.Orders).WithOne(u => u.User);
             modelBuilder.Entity<UserRating>().HasKey(k => new { k.UserId, k.RatingId });
             modelBuilder.Entity<UserRating>().HasIndex(k => new { k.UserId, k.RatingId, k.Score }).IsUnique();
+            modelBuilder.Entity<DishOrder>().HasKey(x => new { x.DishesId, x.OrdersId });
+            modelBuilder.Entity<DishOrder>().HasOne(o => o.Order).WithMany(od => od.OrderDishes).HasForeignKey(od => od.OrdersId);
+            modelBuilder.Entity<DishOrder>().HasOne(d => d.Dish).WithMany(od => od.OrderDishes).HasForeignKey(od => od.DishesId);
 
             modelBuilder.Entity<User>().Property(p => p.Gender).HasConversion<string>();
             modelBuilder.Entity<Order>().Property(p => p.Status).HasConversion<string>();

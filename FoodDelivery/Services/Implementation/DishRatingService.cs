@@ -21,8 +21,8 @@ namespace FoodDelivery.Services.Implementation
                 .Where(o => o.Status == OrderStatus.Delivered)
                 .Include(u => u.User)
                 .Where(u => u.User.Id == Guid.Parse(userId))
-                .Include(d => d.Dishes)
-                .Where(d => d.Dishes.Any(c => c.Id == id))
+                .Include(d => d.OrderDishes)
+                .Where(d => d.OrderDishes.Any(c => c.DishesId == id))
                 .AnyAsync();
             return result;
         }

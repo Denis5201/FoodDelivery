@@ -19,25 +19,25 @@ namespace FoodDelivery.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetOrder(Guid id)
+        public async Task<ActionResult<OrderDto>> GetOrder(Guid id)
         {
-            await _orderService.GetOrderInfo(id);
-            return Ok();
+            var order = await _orderService.GetOrderInfo(id);
+            return Ok(order);
         }
 
         [HttpGet("")]
         [Authorize]
-        public async Task<IActionResult> GetOrderList()
+        public async Task<ActionResult<List<OrderInfoDto>>> GetOrderList()
         {
-            await _orderService.GetOrderList();
-            return Ok();
+            var orderList = await _orderService.GetOrderList(User.Identity!.Name!);
+            return Ok(orderList);
         }
 
         [HttpPost("")]
         [Authorize]
         public async Task<IActionResult> PostOrder(OrderCreateDto order)
         {
-            await _orderService.CreateOrder(order);
+            await _orderService.CreateOrder(order, User.Identity!.Name!);
             return Ok();
         }
 

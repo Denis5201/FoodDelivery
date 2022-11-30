@@ -24,6 +24,6 @@ namespace FoodDelivery.Models.Entity
 
         public Category Category { get; set; }
 
-        public ICollection<Order>? Orders { get; set; }
+        public ICollection<DishOrder>? OrderDishes { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodDelivery.Models.Entity
 {
-    public class Basket
+    public class DishInBasket
     {
         public int Id { get; set; }
 

@@ -4,9 +4,9 @@ namespace FoodDelivery.Services.Interface
 {
     public interface IOrderService
     {
-        Task GetOrderInfo(Guid id);
-        Task GetOrderList();
-        Task CreateOrder(OrderCreateDto order);
+        Task<OrderDto> GetOrderInfo(Guid id);
+        Task<List<OrderInfoDto>> GetOrderList(string userId);
+        Task CreateOrder(OrderCreateDto order, string userId);
         Task ConfirmOrder(Guid id);
     }
 }

@@ -1,4 +1,5 @@
-﻿using FoodDelivery.Services.Interface;
+﻿using FoodDelivery.Models.DTO;
+using FoodDelivery.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +19,17 @@ namespace FoodDelivery.Controllers
 
         [HttpGet("")]
         [Authorize]
-        public async Task<IActionResult> GetUserBasket()
+        public async Task<ActionResult<List<DishBasketDto>>> GetUserBasket()
         {
-            await _basketService.GetBasket();
-            return Ok(User.Identity.Name);
+            var dishesInBasket = await _basketService.GetBasket(User.Identity!.Name!);
+            return Ok(dishesInBasket);
         }
 
         [HttpPost("dish/{dishId}")]
         [Authorize]
         public async Task<IActionResult> PostDishInBasket(Guid dishId)
         {
-            await _basketService.AddDishInBasket(dishId);
+            await _basketService.AddDishInBasket(dishId, User.Identity!.Name!);
             return Ok();
         }
 
@@ -36,7 +37,7 @@ namespace FoodDelivery.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteDishFromBasket(Guid dishId, bool increase = false)
         {
-            await _basketService.RemoveDishFromBasket(dishId);
+            await _basketService.RemoveDishFromBasket(dishId, increase, User.Identity!.Name!);
             return Ok();
         }
     }
