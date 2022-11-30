@@ -22,7 +22,7 @@ namespace FoodDelivery.Services.Implementation
                 {
                     Id = p.Id,
                     FullName = p.FullName,
-                    BirthDate = p.birthDate,
+                    BirthDate = p.BirthDate,
                     Gender = p.Gender,
                     Address = p.Address,
                     Email = p.Email,
@@ -40,7 +40,7 @@ namespace FoodDelivery.Services.Implementation
                 return;
             }
             user.FullName = editModel.FullName;
-            user.birthDate = editModel.BirthDate;
+            user.BirthDate = editModel.BirthDate;
             user.Gender = editModel.Gender;
             user.Address = editModel.Address;
             user.PhoneNumber = editModel.PhoneNumber;

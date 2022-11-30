@@ -11,7 +11,7 @@ namespace FoodDelivery.Models.Entity
         [MinLength(1)]
         public string FullName { get; set; }
 
-        public DateTime? birthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         [Required]
         public Gender Gender { get; set; }

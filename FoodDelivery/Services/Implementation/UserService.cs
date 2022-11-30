@@ -28,7 +28,7 @@ namespace FoodDelivery.Services.Implementation
                 Password = userRegisterModel.Password,
                 Email = userRegisterModel.Email,
                 Address = userRegisterModel.Address,
-                birthDate = userRegisterModel.BirthDate,
+                BirthDate = userRegisterModel.BirthDate,
                 Gender = userRegisterModel.Gender,
                 PhoneNumber = userRegisterModel.PhoneNumber
             });
@@ -52,9 +52,15 @@ namespace FoodDelivery.Services.Implementation
             return new TokenResponse { Token = token };
         }
 
-        public async Task Logout()
+        public async Task Logout(string token)
         {
-
+            var invalidToken = new InvalidToken 
+            { 
+                Token = token,
+                ExitTime = DateTime.Now
+            };
+            await _context.InvalidTokens.AddAsync(invalidToken);
+            _context.SaveChanges();
         }
 
         public async Task<string?> AlreadyRegister(UserRegisterModel userRegisterModel)

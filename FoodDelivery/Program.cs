@@ -26,6 +26,8 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IDishRatingService, DishRatingService>();
 builder.Services.AddScoped<IBasketService, BasketService>();
 
+builder.Services.AddHostedService<BackgroundTokenCleaningService>();
+
 //Auth JwtBearer
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

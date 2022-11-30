@@ -6,7 +6,7 @@ namespace FoodDelivery.Services.Interface
     {
         Task<TokenResponse> Register(UserRegisterModel userRegisterModel);
         Task<TokenResponse> Login(LoginCredentials loginCredentials);
-        Task Logout();
+        Task Logout(string token);
         Task<string?> AlreadyRegister(UserRegisterModel userRegisterModel);
     }
 }

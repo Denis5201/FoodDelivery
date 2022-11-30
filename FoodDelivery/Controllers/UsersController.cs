@@ -45,7 +45,8 @@ namespace FoodDelivery.Controllers
         [Authorize]
         public async Task<IActionResult> PostLogout()
         {
-            await _userService.Logout();
+            var token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+            await _userService.Logout(token);
             return Ok();
         }
 

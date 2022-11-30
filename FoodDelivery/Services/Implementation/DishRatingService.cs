@@ -48,6 +48,8 @@ namespace FoodDelivery.Services.Implementation
                 {
                     rating.DishRating = (rating.DishRating * count
                         - rating.UserRatings.Single(u => u.User.Id == userGuid).Score + ratingScore) / count;
+
+                    rating.UserRatings.Single(u => u.UserId == userGuid).Score = ratingScore;
                 }
                 else
                 {
