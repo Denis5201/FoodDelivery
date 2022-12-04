@@ -42,7 +42,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPost("logout")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostLogout()
         {
             var token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
@@ -52,7 +52,7 @@ namespace FoodDelivery.Controllers
 
         [HttpGet("profile")]
         [Produces("application/json")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<ActionResult<UserDto>> GetProfile()
         {
             var profile = await _userProfileService.GetProfile(User.Identity!.Name!);
@@ -60,7 +60,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPut("profile")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PutProfile(UserEditModel editModel)
         {
             await _userProfileService.ChangeProfile(editModel, User.Identity!.Name!);

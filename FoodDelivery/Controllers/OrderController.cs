@@ -18,7 +18,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<ActionResult<OrderDto>> GetOrder(Guid id)
         {
             var order = await _orderService.GetOrderInfo(id);
@@ -26,7 +26,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpGet("")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<ActionResult<List<OrderInfoDto>>> GetOrderList()
         {
             var orderList = await _orderService.GetOrderList(User.Identity!.Name!);
@@ -34,7 +34,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPost("")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostOrder(OrderCreateDto order)
         {
             await _orderService.CreateOrder(order, User.Identity!.Name!);
@@ -42,7 +42,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPost("{id}/status")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostOrderConfirm(Guid id)
         {
             await _orderService.ConfirmOrder(id);

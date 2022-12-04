@@ -41,7 +41,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpGet("{id}/rating/check")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<ActionResult<bool>> GetIsUserHaveAlreadyDish(Guid id)
         {
             bool result = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
@@ -49,7 +49,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPost("{id}/rating")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostDishRating(Guid id, int ratingScore)
         {
             bool isAble = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
