@@ -23,11 +23,11 @@ namespace FoodDelivery.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<TokenResponse>> PostRegister(UserRegisterModel userRegisterModel)
         {
-            string? error = await _userService.AlreadyRegister(userRegisterModel);
-            if (error != null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(error);
+                return BadRequest(ModelState);
             }
+            await _userService.AlreadyRegister(userRegisterModel);
 
             TokenResponse token = await _userService.Register(userRegisterModel);
             return Ok(token);
@@ -37,6 +37,10 @@ namespace FoodDelivery.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<TokenResponse>> PostLogin(LoginCredentials loginCredentials)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             TokenResponse token = await _userService.Login(loginCredentials);
             return Ok(token);
         }
@@ -63,6 +67,10 @@ namespace FoodDelivery.Controllers
         [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PutProfile(UserEditModel editModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _userProfileService.ChangeProfile(editModel, User.Identity!.Name!);
             return Ok();
         }

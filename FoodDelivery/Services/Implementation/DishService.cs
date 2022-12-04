@@ -2,6 +2,7 @@
 using FoodDelivery.Models.DTO;
 using FoodDelivery.Models.Entity;
 using FoodDelivery.Services.Interface;
+using FoodDelivery.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Implementation
@@ -45,7 +46,7 @@ namespace FoodDelivery.Services.Implementation
             }
             count = dishQuery.Count();
 
-            if (count != 0 && sorting != null)
+            if (sorting != null)
             {
                 dishQuery = SortingDishes(dishQuery, (DishSorting)sorting);
             }
@@ -54,6 +55,11 @@ namespace FoodDelivery.Services.Implementation
                     .Take(6)
                     .Select(d => GetDishDtoFromDishes(d))
                     .ToListAsync();
+
+            if (!dishList.Any() && page > 1)
+            {
+                throw new IncorrectDataException("Слишком большой номер страницы");
+            }
 
             return new DishPagedListDto
             {
@@ -82,7 +88,13 @@ namespace FoodDelivery.Services.Implementation
                     Vegetarian = p.Vegetarian,
                     Rating = p.Rating == null ? null : p.Rating.DishRating,
                     Category = p.Category
-                }).SingleAsync();
+                }).SingleOrDefaultAsync();
+
+            if (dish == null)
+            {
+                throw new ItemNotFoundException("Еда не найдена");
+            }
+
             return dish;
         }
 

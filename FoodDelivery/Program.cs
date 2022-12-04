@@ -37,8 +37,8 @@ builder.Services.AddSingleton<IAuthorizationHandler, StillWorkingTokenHandler>()
 //Auth JwtBearer
 builder.Services.AddAuthorization(options =>
     options.AddPolicy("StillWorkingToken", policy => 
-        policy.AddRequirements(new StillWorkingTokenRequirement())
-        .RequireAuthenticatedUser()));
+        policy.RequireAuthenticatedUser()
+        .AddRequirements(new StillWorkingTokenRequirement())));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

@@ -1,6 +1,7 @@
 ﻿using FoodDelivery.Models;
 using FoodDelivery.Models.DTO;
 using FoodDelivery.Models.Entity;
+using FoodDelivery.Services.Exceptions;
 using FoodDelivery.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -38,6 +39,15 @@ namespace FoodDelivery.Services.Implementation
             return new TokenResponse { Token = token };
         }
 
+        public async Task AlreadyRegister(UserRegisterModel userRegisterModel)
+        {
+            var isUserExists = await _context.Users.AnyAsync(e => e.Email == userRegisterModel.Email);
+            if (isUserExists)
+            {
+                throw new ElementAlreadyExistsException("Пользователь с данным E-mail уже существует");
+            }
+        }
+
         public async Task<TokenResponse> Login(LoginCredentials loginCredentials)
         {
             var user = await _context.Users
@@ -45,7 +55,7 @@ namespace FoodDelivery.Services.Implementation
                 .SingleOrDefaultAsync();
             if (user == null)
             {
-                return new TokenResponse { Token = null };
+                throw new IncorrectDataException("Неверный логин или пароль");
             }
 
             string token = CreateToken(user.Id);
@@ -63,17 +73,7 @@ namespace FoodDelivery.Services.Implementation
             _context.SaveChanges();
         }
 
-        public async Task<string?> AlreadyRegister(UserRegisterModel userRegisterModel)
-        {
-            var user = await _context.Users.Where(e => e.Email == userRegisterModel.Email).SingleOrDefaultAsync();
-            if (user != null)
-            {
-                return "Пользователь с данным E-mail уже существует";
-            }
-            return null;
-        }
-
-        private string CreateToken(Guid id)
+        private static string CreateToken(Guid id)
         {
             var claim = new List<Claim> { new Claim(ClaimsIdentity.DefaultNameClaimType, id.ToString()) };
             var now = DateTime.UtcNow;

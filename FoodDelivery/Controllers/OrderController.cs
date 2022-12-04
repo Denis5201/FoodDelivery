@@ -21,7 +21,7 @@ namespace FoodDelivery.Controllers
         [Authorize(Policy = "StillWorkingToken")]
         public async Task<ActionResult<OrderDto>> GetOrder(Guid id)
         {
-            var order = await _orderService.GetOrderInfo(id);
+            var order = await _orderService.GetOrderInfo(id, User.Identity!.Name!);
             return Ok(order);
         }
 
@@ -37,6 +37,14 @@ namespace FoodDelivery.Controllers
         [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostOrder(OrderCreateDto order)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (order.DeliveryTime < DateTime.Now.AddMinutes(20))
+            {
+                return BadRequest("Слишком мало времени на доставку");
+            }
             await _orderService.CreateOrder(order, User.Identity!.Name!);
             return Ok();
         }
@@ -45,7 +53,7 @@ namespace FoodDelivery.Controllers
         [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostOrderConfirm(Guid id)
         {
-            await _orderService.ConfirmOrder(id);
+            await _orderService.ConfirmOrder(id, User.Identity!.Name!);
             return Ok();
         }
     }

@@ -2,6 +2,7 @@
 using FoodDelivery.Models.DTO;
 using FoodDelivery.Models.Entity;
 using FoodDelivery.Services.Interface;
+using FoodDelivery.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Implementation
@@ -15,13 +16,23 @@ namespace FoodDelivery.Services.Implementation
             _context = context;
         }
 
-        public async Task<OrderDto> GetOrderInfo(Guid id)
+        public async Task<OrderDto> GetOrderInfo(Guid id, string userId)
         {
             var orderInfo = await _context.Orders
                 .Where(o => o.Id == id)
                 .Include(od => od.OrderDishes)
                 .ThenInclude(d => d.Dish)
-                .SingleAsync();
+                .Include(u => u.User)
+                .SingleOrDefaultAsync();
+            
+            if (orderInfo == null)
+            {
+                throw new ItemNotFoundException("Заказ не найден");
+            }
+            if (orderInfo.User.Id != Guid.Parse(userId))
+            {
+                throw new NoPermissionException("Доступ запрещён");
+            }
 
             var result = new OrderDto
             {
@@ -70,6 +81,11 @@ namespace FoodDelivery.Services.Implementation
                 .Include(d => d.Dish)
                 .ToListAsync();
 
+            if (!infoFromBasket.Any())
+            {
+                throw new IncorrectDataException("Нельзя создать заказ, не выбрав еду");
+            }
+
             User user = await _context.Users.SingleAsync(u => u.Id == Guid.Parse(userId));
 
             var orderId = Guid.NewGuid();
@@ -98,9 +114,26 @@ namespace FoodDelivery.Services.Implementation
             _context.SaveChanges();
         }
 
-        public async Task ConfirmOrder(Guid id)
+        public async Task ConfirmOrder(Guid id, string userId)
         {
-            var order = await _context.Orders.SingleAsync(o => o.Id == id);
+            var order = await _context.Orders
+                .Where(o => o.Id == id)
+                .Include(u => u.User)
+                .SingleOrDefaultAsync();
+
+            if (order == null)
+            {
+                throw new ItemNotFoundException("Заказ не найден");
+            }
+            if (order.User.Id != Guid.Parse(userId))
+            {
+                throw new NoPermissionException("Доступ запрещён");
+            }
+            if (order.Status == OrderStatus.Delivered)
+            {
+                throw new IncorrectDataException("Нельзя подтвердить уже подтверждённый заказ");
+            }
+
             order.Status = OrderStatus.Delivered;
             _context.SaveChanges();
         }

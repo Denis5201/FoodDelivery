@@ -17,6 +17,11 @@ namespace FoodDelivery.Services.Exceptions
             {
                 await _next(context);
             }
+            catch (IncorrectDataException e)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(e.Message);
+            }
             catch (ItemNotFoundException e)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;

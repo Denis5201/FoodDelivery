@@ -33,12 +33,8 @@ namespace FoodDelivery.Services.Implementation
 
         public async Task ChangeProfile(UserEditModel editModel, string id)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(p => p.Id == Guid.Parse(id));
+            var user = await _context.Users.SingleAsync(p => p.Id == Guid.Parse(id));
 
-            if (user == null)
-            {
-                return;
-            }
             user.FullName = editModel.FullName;
             user.BirthDate = editModel.BirthDate;
             user.Gender = editModel.Gender;

@@ -2,6 +2,7 @@
 using FoodDelivery.Models.DTO;
 using FoodDelivery.Models.Entity;
 using FoodDelivery.Services.Interface;
+using FoodDelivery.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDelivery.Services.Implementation
@@ -17,6 +18,13 @@ namespace FoodDelivery.Services.Implementation
 
         public async Task<bool> IsAbleSetRating(Guid id, string userId)
         {
+            var dish = await _context.Dishes.AnyAsync(d => d.Id == id);
+
+            if (!dish)
+            {
+                throw new ItemNotFoundException("Еда не найдена");
+            }
+
             bool result = await _context.Orders
                 .Where(o => o.Status == OrderStatus.Delivered)
                 .Include(u => u.User)
@@ -31,10 +39,19 @@ namespace FoodDelivery.Services.Implementation
         {
             var userGuid = Guid.Parse(userId);
 
-            bool dishAlreadyHasRating = await _context.Rating.AnyAsync(r => r.DishId == id);
+            var dish = await _context.Dishes
+                .Where(d => d.Id == id)
+                .Include(d => d.Rating)
+                .SingleOrDefaultAsync();
+
+            if (dish == null)
+            {
+                throw new ItemNotFoundException("Еда не найдена");
+            }
+
             User user = await _context.Users.SingleAsync(u => u.Id == userGuid);
 
-            if (dishAlreadyHasRating)
+            if (dish.Rating != null)
             {
                 var rating = await _context.Rating
                     .Where(r => r.DishId == id)

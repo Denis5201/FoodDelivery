@@ -27,7 +27,7 @@ namespace FoodDelivery.Controllers
             DishSorting? sorting = null, 
             int page = 1)
         {
-            categories = categories ?? new List<Category>();
+            categories ??= new List<Category>();
             var result = await _dishService.GetDishList(categories, vegetarian, sorting, page);
             return Ok(result);
         }
@@ -52,11 +52,17 @@ namespace FoodDelivery.Controllers
         [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostDishRating(Guid id, int ratingScore)
         {
+            if (ratingScore > 10 && ratingScore < 1)
+            {
+                return BadRequest("Оценка должна быть в диапазрне от 1 до 10");
+            }
+
             bool isAble = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
             if (!isAble)
             {
-                return BadRequest();
-            }
+                return BadRequest("Пользователь не может оценить данную еду");
+            }            
+
             await _dishRatingService.SetRating(id, ratingScore, User.Identity!.Name!);
             return Ok();
         }
