@@ -1,4 +1,5 @@
 using FoodDelivery.Models;
+using FoodDelivery.Services.Exceptions;
 using FoodDelivery.Services.Implementation;
 using FoodDelivery.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -53,6 +54,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
