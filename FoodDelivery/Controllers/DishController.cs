@@ -10,8 +10,8 @@ namespace FoodDelivery.Controllers
     [ApiController]
     public class DishController : ControllerBase
     {
-        private IDishService _dishService;
-        private IDishRatingService _dishRatingService;
+        private readonly IDishService _dishService;
+        private readonly IDishRatingService _dishRatingService;
 
         public DishController(IDishService dishService, IDishRatingService dishRatingService)
         {
@@ -52,11 +52,11 @@ namespace FoodDelivery.Controllers
         [Authorize]
         public async Task<IActionResult> PostDishRating(Guid id, int ratingScore)
         {
-            /*bool isAble = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
-            if (!isAble) 
+            bool isAble = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
+            if (!isAble)
             {
                 return BadRequest();
-            }*/
+            }
             await _dishRatingService.SetRating(id, ratingScore, User.Identity!.Name!);
             return Ok();
         }

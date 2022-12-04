@@ -17,58 +17,43 @@ namespace FoodDelivery.Services.Implementation
 
         public async Task<DishPagedListDto> GetDishList(List<Category> categories, bool vegetarian, DishSorting? sorting, int page)
         {
-            List<DishDto> dishList = new();
+            IQueryable<Dish> dishQuery;
             int count = 0;
 
             if (categories.Any() && vegetarian)
             {
-                dishList = await _context.Dishes
+                dishQuery = _context.Dishes
                     .Where(d => categories.Contains(d.Category) && d.Vegetarian == true)
-                    .Skip((page - 1) * 6)
-                    .Take(6)
-                    .Include(r => r.Rating)
-                    .Select(d => GetDishDtoFromDishes(d))
-                    .ToListAsync();
-                count = _context.Dishes
-                    .Where(d => categories.Contains(d.Category) && d.Vegetarian == true).Count();
+                    .Include(r => r.Rating);
             }
             else if (categories.Any() && !vegetarian)
             {
-                dishList = await _context.Dishes
+                dishQuery = _context.Dishes
                     .Where(d => categories.Contains(d.Category))
-                    .Skip((page - 1) * 6)
-                    .Take(6)
-                    .Include(r => r.Rating)
-                    .Select(d => GetDishDtoFromDishes(d))
-                    .ToListAsync();
-                count = _context.Dishes.Where(d => categories.Contains(d.Category)).Count();
+                    .Include(r => r.Rating);
             }
             else if (vegetarian)
             {
-                dishList = await _context.Dishes
+                dishQuery = _context.Dishes
                     .Where(d => d.Vegetarian == true)
-                    .Skip((page - 1) * 6)
-                    .Take(6)
-                    .Include(r => r.Rating)
-                    .Select(d => GetDishDtoFromDishes(d))
-                    .ToListAsync();
-                count = _context.Dishes.Where(d => d.Vegetarian == true).Count();
+                    .Include(r => r.Rating);
             }
             else
             {
-                dishList = await _context.Dishes
-                    .Skip((page - 1) * 6)
-                    .Take(6)
-                    .Include(r => r.Rating)
-                    .Select(d => GetDishDtoFromDishes(d))
-                    .ToListAsync();
-                count = _context.Dishes.Count();
+                dishQuery = _context.Dishes
+                    .Include(r => r.Rating);
+            }
+            count = dishQuery.Count();
+
+            if (count != 0 && sorting != null)
+            {
+                dishQuery = SortingDishes(dishQuery, (DishSorting)sorting);
             }
 
-            if (dishList.Any() && sorting != null)
-            {
-                dishList = SortingDishes(dishList, (DishSorting)sorting);
-            }
+            var dishList = await dishQuery.Skip((page - 1) * 6)
+                    .Take(6)
+                    .Select(d => GetDishDtoFromDishes(d))
+                    .ToListAsync();
 
             return new DishPagedListDto
             {
@@ -116,34 +101,34 @@ namespace FoodDelivery.Services.Implementation
             };
         }
 
-        private List<DishDto> SortingDishes(List<DishDto> dishList, DishSorting sorting)
+        private static IQueryable<Dish> SortingDishes(IQueryable<Dish> dishQuery, DishSorting sorting)
         {
             switch (sorting)
             {
                 case DishSorting.NameAsc:
-                    dishList = dishList.OrderBy(d => d.Name, StringComparer.Ordinal).ToList();
+                    dishQuery = dishQuery.OrderBy(d => d.Name/*, StringComparer.Ordinal*/);
                     break;
                 case DishSorting.NameDesc:
-                    dishList = dishList.OrderByDescending(d => d.Name, StringComparer.Ordinal).ToList();
+                    dishQuery = dishQuery.OrderByDescending(d => d.Name/*, StringComparer.Ordinal*/);
                     break;
                 case DishSorting.PriceAsc:
-                    dishList = dishList.OrderBy(d => d.Price).ToList();
+                    dishQuery = dishQuery.OrderBy(d => d.Price);
                     break;
                 case DishSorting.PriceDesc:
-                    dishList = dishList.OrderByDescending(d => d.Price).ToList();
+                    dishQuery = dishQuery.OrderByDescending(d => d.Price);
                     break;
                 case DishSorting.RatingAsc:
-                    dishList = dishList
-                        .OrderByDescending(d => d.Rating.HasValue)
-                        .ThenBy(d => d.Rating).ToList();
+                    dishQuery = dishQuery
+                        .OrderByDescending(d => d.Rating != null)
+                        .ThenBy(d => d.Rating);
                     break;
                 case DishSorting.RatingDesc:
-                    dishList = dishList
-                        .OrderByDescending(d => d.Rating.HasValue)
-                        .OrderByDescending(d => d.Rating).ToList();
+                    dishQuery = dishQuery
+                        .OrderByDescending(d => d.Rating != null)
+                        .OrderByDescending(d => d.Rating);
                     break;
             }
-            return dishList;
+            return dishQuery;
         }
     }
 }

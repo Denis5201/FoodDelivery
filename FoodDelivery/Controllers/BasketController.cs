@@ -10,7 +10,7 @@ namespace FoodDelivery.Controllers
     [ApiController]
     public class BasketController : ControllerBase
     {
-        private IBasketService _basketService;
+        private readonly IBasketService _basketService;
 
         public BasketController(IBasketService basketService)
         {

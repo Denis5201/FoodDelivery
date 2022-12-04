@@ -18,7 +18,7 @@ namespace FoodDelivery.Models.DTO
         [Required]
         public double Price { get; set; }
 
-        public List<DishBasketDto>? Dishes { get; set; }
+        public List<DishBasketDto> Dishes { get; set; }
 
         [Required]
         [MinLength(1)]

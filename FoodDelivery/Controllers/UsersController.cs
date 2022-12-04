@@ -10,8 +10,8 @@ namespace FoodDelivery.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
-        private IUserProfileService _userProfileService;
+        private readonly IUserService _userService;
+        private readonly IUserProfileService _userProfileService;
 
         public UsersController(IUserService userService, IUserProfileService userProfileService)
         {
