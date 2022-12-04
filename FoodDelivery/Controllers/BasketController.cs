@@ -18,7 +18,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpGet("")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<ActionResult<List<DishBasketDto>>> GetUserBasket()
         {
             var dishesInBasket = await _basketService.GetBasket(User.Identity!.Name!);
@@ -26,7 +26,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPost("dish/{dishId}")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostDishInBasket(Guid dishId)
         {
             await _basketService.AddDishInBasket(dishId, User.Identity!.Name!);
@@ -34,7 +34,7 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpDelete("dish/{dishId}")]
-        [Authorize]
+        [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> DeleteDishFromBasket(Guid dishId, bool increase = false)
         {
             await _basketService.RemoveDishFromBasket(dishId, increase, User.Identity!.Name!);

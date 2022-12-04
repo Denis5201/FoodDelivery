@@ -1,8 +1,10 @@
 using FoodDelivery.Models;
+using FoodDelivery.Services.Authorization;
 using FoodDelivery.Services.Exceptions;
 using FoodDelivery.Services.Implementation;
 using FoodDelivery.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -29,8 +31,14 @@ builder.Services.AddScoped<IBasketService, BasketService>();
 
 builder.Services.AddHostedService<BackgroundTokenCleaningService>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IAuthorizationHandler, StillWorkingTokenHandler>();
+
 //Auth JwtBearer
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+    options.AddPolicy("StillWorkingToken", policy => 
+        policy.AddRequirements(new StillWorkingTokenRequirement())
+        .RequireAuthenticatedUser()));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
