@@ -108,7 +108,7 @@ namespace FoodDelivery.Services.Implementation
                 Price = dish.Price,
                 Image = dish.Image,
                 Vegetarian = dish.Vegetarian,
-                Rating = dish.Rating == null ? null : dish.Rating.DishRating,
+                Rating = dish.Rating?.DishRating,
                 Category = dish.Category
             };
         }

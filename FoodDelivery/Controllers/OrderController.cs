@@ -43,7 +43,7 @@ namespace FoodDelivery.Controllers
             }
             if (order.DeliveryTime < DateTime.Now.AddMinutes(20))
             {
-                return BadRequest("Слишком мало времени на доставку");
+                return BadRequest(new Response { Status = "400", Message = "Слишком мало времени на доставку" });
             }
             await _orderService.CreateOrder(order, User.Identity!.Name!);
             return Ok();

@@ -50,6 +50,7 @@ namespace FoodDelivery.Services.Implementation
                     Amount = d.Amount,
                     Image = d.Dish.Image
                 }).ToList(),
+                Address = orderInfo.Address,
             };
 
             return result;
@@ -111,6 +112,9 @@ namespace FoodDelivery.Services.Implementation
                     Amount = dishInBasket.Amount
                 });
             }
+
+            _context.Baskets.RemoveRange(infoFromBasket);
+
             _context.SaveChanges();
         }
 

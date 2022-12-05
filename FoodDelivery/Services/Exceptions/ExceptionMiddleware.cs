@@ -1,4 +1,5 @@
 ﻿using FoodDelivery.Models.DTO;
+using Microsoft.AspNetCore.Http;
 
 namespace FoodDelivery.Services.Exceptions
 {
@@ -20,30 +21,30 @@ namespace FoodDelivery.Services.Exceptions
             catch (IncorrectDataException e)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(e.Message);
+                await context.Response.WriteAsJsonAsync(new Response { Status = "400", Message = e.Message });
             }
             catch (ItemNotFoundException e)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
-                await context.Response.WriteAsJsonAsync(e.Message);
+                await context.Response.WriteAsJsonAsync(new Response { Status = "404", Message = e.Message });
             }
             catch (NoPermissionException e)
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(e.Message);
+                await context.Response.WriteAsJsonAsync(new Response { Status = "403", Message = e.Message });
             }
             catch (ElementAlreadyExistsException e)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(e.Message);
+                await context.Response.WriteAsJsonAsync(new Response { Status = "400", Message = e.Message });
             }
             catch (Exception e)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await context.Response.WriteAsJsonAsync(new Response
                 {
-                    status = StatusCodes.Status500InternalServerError.ToString(),
-                    message = e.Message
+                    Status = StatusCodes.Status500InternalServerError.ToString(),
+                    Message = e.Message
                 });
             }
         }

@@ -66,8 +66,8 @@ namespace FoodDelivery.Services.Implementation
                     Dish = dish
                 };
                 await _context.Baskets.AddAsync(newDish);
-                _context.SaveChanges();
             }
+            _context.SaveChanges();
         }
 
         public async Task RemoveDishFromBasket(Guid dishId, bool increase, string userId)

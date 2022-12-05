@@ -52,15 +52,15 @@ namespace FoodDelivery.Controllers
         [Authorize(Policy = "StillWorkingToken")]
         public async Task<IActionResult> PostDishRating(Guid id, int ratingScore)
         {
-            if (ratingScore > 10 && ratingScore < 1)
+            if (ratingScore > 10 || ratingScore < 1)
             {
-                return BadRequest("Оценка должна быть в диапазрне от 1 до 10");
+                return BadRequest(new Response{ Status = "400", Message = "Оценка должна быть в диапазоне от 1 до 10" });
             }
 
             bool isAble = await _dishRatingService.IsAbleSetRating(id, User.Identity!.Name!);
             if (!isAble)
             {
-                return BadRequest("Пользователь не может оценить данную еду");
+                return BadRequest(new Response { Status = "400", Message = "Пользователь не может оценить данную еду" });
             }            
 
             await _dishRatingService.SetRating(id, ratingScore, User.Identity!.Name!);

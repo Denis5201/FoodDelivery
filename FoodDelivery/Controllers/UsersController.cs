@@ -31,7 +31,7 @@ namespace FoodDelivery.Controllers
 
             if (userRegisterModel.BirthDate >= DateTime.Now)
             {
-                return BadRequest("Недопустимая дата рождения");
+                return BadRequest(new Response { Status = "400", Message = "Недопустимая дата рождения" });
             }
 
             TokenResponse token = await _userService.Register(userRegisterModel);
@@ -76,6 +76,11 @@ namespace FoodDelivery.Controllers
             {
                 return BadRequest(ModelState);
             }
+            if (editModel.BirthDate >= DateTime.Now)
+            {
+                return BadRequest(new Response { Status = "400", Message = "Недопустимая дата рождения" });
+            }
+
             await _userProfileService.ChangeProfile(editModel, User.Identity!.Name!);
             return Ok();
         }
