@@ -29,6 +29,11 @@ namespace FoodDelivery.Controllers
             }
             await _userService.AlreadyRegister(userRegisterModel);
 
+            if (userRegisterModel.BirthDate >= DateTime.Now)
+            {
+                return BadRequest("Недопустимая дата рождения");
+            }
+
             TokenResponse token = await _userService.Register(userRegisterModel);
             return Ok(token);
         }

@@ -3,6 +3,7 @@ using FoodDelivery.Models.DTO;
 using FoodDelivery.Models.Entity;
 using FoodDelivery.Services.Exceptions;
 using FoodDelivery.Services.Interface;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,11 +23,14 @@ namespace FoodDelivery.Services.Implementation
         public async Task<TokenResponse> Register(UserRegisterModel userRegisterModel)
         {
             Guid newId = Guid.NewGuid();
+            var hasher = new PasswordHasher<User>();
+            var hashPassword = hasher.HashPassword(new User(), userRegisterModel.Password);
+
             await _context.Users.AddAsync(new User
             {
                 Id = newId,
                 FullName = userRegisterModel.FullName,
-                Password = userRegisterModel.Password,
+                Password = hashPassword,
                 Email = userRegisterModel.Email,
                 Address = userRegisterModel.Address,
                 BirthDate = userRegisterModel.BirthDate,
@@ -51,9 +55,16 @@ namespace FoodDelivery.Services.Implementation
         public async Task<TokenResponse> Login(LoginCredentials loginCredentials)
         {
             var user = await _context.Users
-                .Where(u => u.Email == loginCredentials.Email && u.Password == loginCredentials.Password)
+                .Where(u => u.Email == loginCredentials.Email)
                 .SingleOrDefaultAsync();
-            if (user == null)
+
+            var checkPassword = PasswordVerificationResult.Failed;
+            if (user != null)
+            {
+                var hasher = new PasswordHasher<User>();
+                checkPassword = hasher.VerifyHashedPassword(user, user.Password, loginCredentials.Password);
+            }
+            if (checkPassword == PasswordVerificationResult.Failed || user == null)
             {
                 throw new IncorrectDataException("Неверный логин или пароль");
             }
